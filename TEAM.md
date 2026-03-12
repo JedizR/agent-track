@@ -1,62 +1,101 @@
-# TEAM.md — agent-track Team Charter
-<!-- AgentSquad v1.0.0 | Generated: 2026-03-12 -->
+# agent-track — Team Charter
+> AgentSquad v1.0.0 · 2026-03-12
 
-## Mission
-Build `agent-track`: a globally-installed Python CLI tool providing persistent memory
-and task dispatch for Claude Code agents operating inside the AgentSquad framework.
+This document describes how the team operates. It is for human contributors
+and AI agents alike.
 
-## Team Composition
+---
 
-| Role | Runtime | Model | Responsibility |
-|------|---------|-------|----------------|
-| **Tech Lead** | Claude Code | claude-sonnet-4-6 | Architecture, delegation, review, commits |
-| **Backend Engineer** | Gemini CLI | gemini-2.5-flash | DB, CRUD, business logic, get-next algorithm |
-| **Frontend Engineer** | Gemini CLI | gemini-2.5-flash | Typer CLI, Rich UI, --agent flags, JSON output |
-| **QA Engineer** | Gemini CLI | gemini-2.5-flash-lite | pytest suite, coverage, CLI integration tests |
-| **DevOps Engineer** | Gemini CLI | gemini-2.5-flash-lite | pyproject.toml, uv, packaging, CI/CD |
-| **Business Consultant** | Gemini CLI | gemini (web-search) | Schema design, architecture research |
+## The Team
 
-## Coordination Protocol
+### Tech Founder (You + Claude Code)
+**Owns:** Everything. The final say on all decisions.
 
-### Task Dispatch
+The human founder drives strategy, product direction, and architecture.
+Claude Code is the technical co-founder — architecting systems, reviewing all
+agent output, and making the calls that require judgment.
+
+**You decide:** What to build, how the system is designed, what gets shipped.
+
+### Backend Engineer (Gemini Flash)
+**Owns:** `src/agent_track/db/`, `src/agent_track/crud/`, `src/agent_track/models/`, `src/agent_track/core/`
+
+Implements SQLite schema, all CRUD operations, dependency resolution logic,
+and the `get-next` unblocked-task algorithm. Always works from an
+`api-contracts/*.md` file authored by Claude before starting.
+
+### Frontend Engineer (Gemini Flash)
+**Owns:** `src/agent_track/cli/`, `src/agent_track/ui/`
+
+Builds all Typer CLI commands, Rich Kanban boards, status tables, and
+progress indicators. Every command must support `--agent` / `--json` flags
+that return pure, parseable output — zero prose. `get-next` must return
+a ready-to-paste `make <agent> TASK="..."` string when `--agent` is passed.
+
+### QA Engineer (Gemini Flash)
+**Owns:** `tests/`
+
+Writes pytest unit tests (CRUD, dependency resolution, get-next logic) and
+integration tests via `typer.testing.CliRunner`. Coverage target: 80%+.
+Uses fixtures; no hardcoded DB state.
+
+### DevOps Engineer (Gemini Flash)
+**Owns:** `pyproject.toml`, `.github/workflows/`, `Makefile` (build targets)
+
+Configures uv packaging, entry points (`agent-track` CLI command), and
+CI pipeline. Annotates every new env variable with `[REQUIRES MANUAL STEP]`.
+
+### Business Consultant (Gemini Flash + Google Search)
+**Owns:** `research/`
+
+Researches schema patterns, CLI UX benchmarks, and architecture decisions
+using real-time Google Search. Used before major design decisions — not
+per-feature.
+
+---
+
+## Working Norms
+
+### Communication
+- Claude writes task prompts for each agent — the clearer the prompt, the better the output
+- All agent output goes to `agent-output/` (gitignored) — review before integrating
+- Escalations (`[ESCALATE TO CLAUDE]`) are resolved by the human + Claude before continuing
+
+### Code Ownership
+- No agent modifies another agent's domain without Claude coordinating the handoff
+- `api-contracts/` is Claude-only territory — agents only READ these, never write them
+- `src/agent_track/core/` integration points are Claude's responsibility to wire together
+
+### Quality Gates
+- No code integrated without Claude review
+- `uv run pytest` passes before every commit
+- Every Typer command supports `--agent` / `--json` before it is considered done
+- `uv run mypy src/` passes with no errors
+
+### Security
+- All API keys stored only in `~/.agent-team/.env.team` — never in code
+- Global DB at `~/.agent-track.db` — never checked in, never hardcoded
+
+---
+
+## Getting Started (New Machine)
+
+```bash
+# 1. Install AgentSquad
+bash <(curl -fsSL https://raw.githubusercontent.com/JedizR/agentsquad/main/install.sh)
+
+# 2. Add your API key
+nano ~/.agent-team/.env.team   # set GEMINI_API_KEY
+
+# 3. Load credentials
+source ~/.agent-team/.env.team
+
+# 4. Verify team config
+make team-health
+
+# 5. Install agent-track
+uv tool install .
+
+# 6. Run
+agent-track --help
 ```
-make backend  TASK="<atomic, self-contained instruction>"
-make frontend TASK="<atomic, self-contained instruction>"
-make qa       TASK="<atomic, self-contained instruction>"
-make devops   TASK="<atomic, self-contained instruction>"
-make consult  TASK="<atomic, self-contained instruction>"
-```
-
-### Escalation Rules
-- Agent flags `[ESCALATE TO CLAUDE]` → Tech Lead reviews immediately
-- Conflicting outputs → Tech Lead arbitrates, documents decision in `api-contracts/`
-- Blocked agent → Tech Lead rewrites task with more context or breaks it smaller
-
-### Handoff Protocol
-1. Agent completes task → output in `agent-output/<timestamp>-<role>.md`
-2. Tech Lead reviews output for correctness and integration fit
-3. Tech Lead writes 1-sentence handoff summary (stored in DB by `agent-track` itself)
-4. Summary surfaced to next dependent agent via `get-next --agent`
-
-## Communication Standards
-- All inter-agent context via `api-contracts/` files
-- No verbal coordination — everything documented in files
-- Task descriptions are self-contained (assume zero shared context)
-- Output format: code files only, no prose explanations (agents use strip-filler)
-
-## Definition of Done
-A feature is DONE when:
-- [ ] Implementation code committed
-- [ ] Tests written and passing (`uv run pytest`)
-- [ ] `--agent` / `--json` flag works on all new commands
-- [ ] Handoff summary recorded
-- [ ] Conventional commit created
-
-## Decision Log
-
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2026-03-12 | Global DB at `~/.agent-track.db` | Persists across project directories; single source of truth |
-| 2026-03-12 | SQLite WAL mode | Concurrent reads without locking; safe for CLI use |
-| 2026-03-12 | `--agent` flag on all commands | Machine-readable output for AI agent consumers |
-| 2026-03-12 | uv as package manager | Fast, modern, deterministic Python packaging |
