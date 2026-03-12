@@ -1,0 +1,12 @@
+{
+  "model": "gemini-2.5-flash",
+  "models": {
+    "backend": "gemini-2.5-flash",
+    "frontend": "gemini-2.5-flash",
+    "qa": "gemini-2.5-flash-lite",
+    "devops": "gemini-2.5-flash-lite",
+    "consult": "gemini-2.5-flash"
+  },
+  "outputDir": "agent-output",
+  "approvalMode": "yolo"
+}
