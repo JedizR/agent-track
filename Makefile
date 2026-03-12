@@ -30,12 +30,15 @@ DEVOPS_KEY   := $(or $(GEMINI_KEY_DEVOPS),$(GEMINI_API_KEY))
 CONSULT_KEY  := $(or $(GEMINI_KEY_CONSULTANT),$(GEMINI_API_KEY))
 
 # Model defaults (override in .env.team or environment)
-BACKEND_MODEL  ?= gemini-3-flash
-FRONTEND_MODEL ?= gemini-3-flash
-QA_MODEL       ?= gemini-3-flash
-DEVOPS_MODEL   ?= gemini-3-flash
-CONSULT_MODEL  ?= gemini-3-flash
-GEMMA_MODEL    ?= gemma-3-27b-it
+# gemini-2.5-flash-lite: confirmed working, 20 RPD free tier
+# gemini-3-flash-preview: alias for Gemini 3 Flash, 20 RPD free tier
+# NOTE: gemma-3-*-it models do NOT work with gemini-cli (no function calling support)
+BACKEND_MODEL  ?= gemini-2.5-flash-lite
+FRONTEND_MODEL ?= gemini-2.5-flash-lite
+QA_MODEL       ?= gemini-2.5-flash-lite
+DEVOPS_MODEL   ?= gemini-2.5-flash-lite
+CONSULT_MODEL  ?= gemini-3-flash-preview
+GEMMA_MODEL    ?= gemini-2.5-flash-lite
 
 .PHONY: backend frontend qa devops consult \
         backend-lite frontend-lite qa-lite \

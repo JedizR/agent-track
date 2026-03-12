@@ -10,11 +10,11 @@
 | Agent | Role | API Key Variable | Model |
 |-------|------|-----------------|-------|
 | Claude Code (you) | Tech Founder / Head | Anthropic Pro | Latest Claude |
-| Backend Engineer | DB, CRUD, Business Logic | GEMINI_KEY_BACKEND | gemini-3-flash |
-| Frontend Engineer | Typer CLI, Rich UI | GEMINI_KEY_FRONTEND | gemini-3-flash |
-| QA Engineer | Testing, Quality | GEMINI_KEY_QA | gemini-3-flash |
-| DevOps Engineer | CI/CD, Packaging, uv | GEMINI_KEY_DEVOPS | gemini-3-flash |
-| Business Consultant | Research, Schema Design | GEMINI_KEY_CONSULTANT | gemini-3-flash |
+| Backend Engineer | DB, CRUD, Business Logic | GEMINI_KEY_BACKEND | gemini-2.5-flash-lite |
+| Frontend Engineer | Typer CLI, Rich UI | GEMINI_KEY_FRONTEND | gemini-2.5-flash-lite |
+| QA Engineer | Testing, Quality | GEMINI_KEY_QA | gemini-2.5-flash-lite |
+| DevOps Engineer | CI/CD, Packaging, uv | GEMINI_KEY_DEVOPS | gemini-2.5-flash-lite |
+| Business Consultant | Research, Schema Design | GEMINI_KEY_CONSULTANT | gemini-3-flash-preview |
 
 > All agents fall back to `GEMINI_API_KEY` if their individual key is not set.
 > Use `*-lite` Makefile targets (Gemma tier, 14,400 RPD) for boilerplate tasks.
